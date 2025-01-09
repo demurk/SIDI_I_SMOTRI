@@ -1,0 +1,178 @@
+:root {
+    --bg-color: #202124;
+    --border: #5F6368;
+    --text: #E8E8E8;
+
+    /* --bg-color: #ff006a;
+    --border: #0b148a;
+    --text: #000000; */
+}
+
+body {
+    height: 100vh;
+    width: 100vw;
+    margin: 0;
+    background-color: var(--bg-color);
+}
+
+body>* {
+    font-size: 24px !important;
+}
+
+#container {
+    padding: 1%;
+    display: flex;
+    flex-direction: column;
+    row-gap: 10px;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+#player {
+    flex-grow: 1;
+    max-width: 1000px;
+    border: unset;
+    margin: 0 auto;
+    z-index: 10;
+}
+
+.s-box {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-row-gap: 1px;
+}
+
+#players {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-column-gap: 10px;
+    grid-row-gap: 10px;
+}
+
+#search {
+    flex-grow: 1;
+    font-size: 30px;
+    text-indent: 10px;
+}
+
+.s-btn,
+#search,
+#players>* {
+    height: 40px;
+    background-color: var(--bg-color);
+    border: 1px solid var(--border);
+    color: var(--text);
+    width: 100%;
+    font-size: 20px;
+}
+
+.history-btn {
+    text-align: center;
+    line-height: 40px;
+    height: 40px;
+    background-color: var(--bg-color);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 20px;
+    text-decoration: none;
+    display: block;
+    box-sizing: border-box;
+}
+
+.s-box>* {
+    font-size: 20px;
+}
+
+#players>* {
+    font-size: 16px;
+}
+
+#player-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    position: relative;
+    max-height: 500px;
+}
+
+#film_name {
+    font-size: 24px;
+    color: var(--text);
+    text-align: center;
+    text-transform: uppercase;
+    margin: 10px 0;
+}
+
+#loader {
+    position: absolute;
+    top: calc(50% - 30px);
+    left: calc(50% - 30px);
+    width: 60px;
+    height: 60px;
+    border: 5px solid #FFF;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+#form {
+    display: flex;
+    grid-column-start: 1;
+    grid-column-end: 3;
+}
+
+#history_dropdown {
+    width: 100%;
+    z-index: 11;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+.show {
+    display: block;
+}
+
+button {
+    cursor: pointer;
+}
+
+.option {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0 15px;
+}
+
+.search-dropdown {
+    grid-column-start: 1;
+    grid-column-end: 3;
+    z-index: 11;
+}
+
+#search_list {
+    width: 100%;
+}
