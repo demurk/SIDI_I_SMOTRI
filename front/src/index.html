@@ -8,7 +8,7 @@
 <body>
     <div id="container">
         <div class="s-box">
-            <form id="form" onsubmit="get_players()">
+            <form id="form" onsubmit="fetch_video_players()">
                 <input id="search" type="text" list="search-list" oninput="suggest_film_name()"
                     onclick="open_search_list()" class="dropbtn" />
             </form>
@@ -21,16 +21,22 @@
                 <div id="history_dropdown" class="dropdown-content"></div>
             </div>
         </div>
-        <div id="players"></div>
         <div id="film_name"></div>
         <div id="player-container">
-            <iframe id="player" allowfullscreen sandbox="allow-same-origin allow-scripts"
-                allow="encrypted-media"></iframe>
-            <div id="loader"></div>
+            <div id="player" allowfullscreen sandbox="allow-same-origin allow-scripts" allow="encrypted-media"></div>
+            <div id="loader-player" class="loader"></div>
+        </div>
+        <div id="popular_buttons">
+            <button id="popular_btn_f" onclick="fetch_popular('film')">Фильмы</button>
+            <button id="popular_btn_s" onclick="fetch_popular('series')">Сериалы</button>
+        </div>
+        <div id="popular_container">
+            <div id="loader-popular" class="loader"></div>
         </div>
     </div>
 </body>
 
+<script src="https://kinobox.tv/kinobox.min.js"></script>
 <script src="./index.js"></script>
 
 </html>
