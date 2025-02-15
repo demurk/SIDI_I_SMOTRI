@@ -27,13 +27,22 @@ var FIRST_SEARCH = true;
 
 function set_loading(is_loading, loader_id) {
     const loader = document.getElementById(loader_id);
-    loader.style.display = is_loading ? "inline-block" : "none";
+    if (loader) {
+        loader.style.display = is_loading ? "inline-block" : "none";
+    }
 }
 
 function toggle_type() {
     current_search_type = current_search_type === "title" ? "kinopoisk" : "title";
     TYPE_BTN.innerText = search_type_map[current_search_type].changeToText;
     SEARCH_BAR.placeholder = search_type_map[current_search_type].placeholder;
+}
+
+function try_fullscreen() {
+    const video = PLAYER.getElementsByClassName("kinobox_iframe")[0];
+    if (video.requestFullscreen) video.requestFullscreen();
+    else if (video.webkitRequestFullscreen) video.webkitRequestFullscreen();
+    else if (video.msRequestFullScreen) video.msRequestFullScreen();
 }
 
 function open_search_list() {
@@ -123,13 +132,17 @@ function update_history() {
 }
 
 function fetch_popular(type) {
+    const type_to_arg = {
+        animation: "genre=animation",
+        film: "films=true",
+        series: "series=true",
+    };
+
     set_loading(true, LOADER_POPULAR_ID);
-    fetch(`https://kinobox.tv/api/films/popular?type=${type}`, {
+    fetch(`https://kp.kinobox.tv/films/popular?released=true&page=1&${type_to_arg[type]}`, {
         headers: {
             accept: "*/*",
             "accept-language": "ru,en;q=0.9",
-            "cache-control": "no-cache",
-            pragma: "no-cache",
             priority: "u=1, i",
             "sec-ch-ua":
                 '"Chromium";v="130", "YaBrowser";v="24.12", "Not?A_Brand";v="99", "Yowser";v="2.5"',
@@ -148,10 +161,10 @@ function fetch_popular(type) {
     })
         .then((response) => response.json())
         .then((response) => {
-            const buttons = response.map((value) => {
+            const buttons = response.data.films.map((value) => {
                 function action() {
                     search_by_id(value.id);
-                    CURRENT_FILM_NAME.innerText = value.title;
+                    CURRENT_FILM_NAME.innerText = value.title.russian || value.title.original;
                 }
 
                 const button = document.createElement("button");
@@ -165,9 +178,19 @@ function fetch_popular(type) {
 
                 const title = document.createElement("div");
                 title.className = "popular-title";
-                title.textContent = value.title;
-
+                title.textContent = value.title.russian || value.title.original;
                 button.appendChild(title);
+
+                const rating = document.createElement("div");
+                rating.className = "popular-rating";
+                const ratingValue = value.rating.kinopoisk.value || value.rating.imdb.value;
+                if (ratingValue) {
+                    rating.textContent = ratingValue.toFixed(1);
+                } else {
+                    rating.textContent = "-";
+                }
+                button.appendChild(rating);
+
                 return button;
             });
             set_loading(false, LOADER_POPULAR_ID);

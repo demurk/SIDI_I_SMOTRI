@@ -40,7 +40,7 @@ body>* {
 .s-box {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    grid-row-gap: 1px;
+    grid-row-gap: 2px;
 }
 
 #search {
@@ -53,7 +53,7 @@ body>* {
 #search {
     height: 40px;
     background-color: var(--bg-color);
-    border: 1px solid var(--border);
+    border: 2px solid var(--border);
     color: var(--text);
     width: 100%;
     font-size: 20px;
@@ -65,7 +65,7 @@ body>* {
     line-height: 40px;
     height: 40px;
     background-color: var(--bg-color);
-    border: 1px solid var(--border);
+    border: 2px solid var(--border);
     color: var(--text);
     font-size: 20px;
     text-decoration: none;
@@ -174,7 +174,7 @@ button {
     grid-template-rows: repeat(auto-fit, minmax(300px, 1fr));
     gap: 20px;
     position: relative;
-    min-height: 100px;
+    /* min-height: 100px; */
 }
 
 .popular-poster {
@@ -193,13 +193,22 @@ button {
     line-height: 40px;
     height: 40px;
     background-color: var(--bg-color);
-    border: 1px solid var(--border);
+    border: 2px solid var(--border);
     color: var(--text);
     font-size: 20px;
     text-decoration: none;
     display: block;
     box-sizing: border-box;
     width: 100%;
+}
+
+.popular-rating {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    padding: 5px;
+    background-color: var(--bg-color);
+    font-size: 25px;
 }
 
 .popular-btn {
@@ -210,7 +219,7 @@ button {
     justify-content: space-between;
 
     background-color: var(--bg-color);
-    border: 1px solid var(--border);
+    border: 2px solid var(--border);
     color: var(--text);
 
     font-size: 20px;
