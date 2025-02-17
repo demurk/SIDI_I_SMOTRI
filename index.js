@@ -184,10 +184,11 @@ function fetch_popular(type) {
 
                 const country = document.createElement("div");
                 country.className = "popular-country";
-                country.textContent = value.countries
-                    .map((v) => v.name)
-                    .slice(0, 2)
-                    .join(", ");
+                country.textContent =
+                    value.countries
+                        .map((v) => v.name)
+                        .slice(0, 1)
+                        .join(", ") + ` (${value.year})`;
                 button.appendChild(country);
 
                 const genre = document.createElement("div");

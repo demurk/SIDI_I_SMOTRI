@@ -204,9 +204,9 @@ button {
     position: absolute;
     top: 5px;
     right: 10px;
-    padding: 5px;
+    padding: 5px 10px;
     background-color: var(--bg-color);
-    font-size: 25px;
+    font-size: 22px;
 }
 
 .popular-btn {
@@ -226,7 +226,7 @@ button {
 }
 
 .popular-title {
-    min-height: 60px;
+    min-height: 70px;
     display: flex;
     justify-content: center;
     align-items: center;
