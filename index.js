@@ -63,6 +63,38 @@ function search_wrapper(value) {
             default: "menu_button",
             format: "{N} - {S} : {T} ({Q})",
         },
+        players: {
+            collaps: {
+                position: 2,
+            },
+            alloha: {
+                position: 1,
+            },
+            ashdi: {
+                position: 3,
+            },
+            cdnmovies: {
+                position: 4,
+            },
+            hdvb: {
+                position: 5,
+            },
+            kodik: {
+                position: 6,
+            },
+            turbo: {
+                position: 7,
+            },
+            vibix: {
+                position: 8,
+            },
+            videocdn: {
+                position: 9,
+            },
+            voidboost: {
+                position: 10,
+            },
+        },
     });
     update_search_list(value);
 }
@@ -76,7 +108,7 @@ function search_video_from_form() {
 
 function update_search_list(value) {
     const cur_search_list = JSON.parse(localStorage.getItem("search-list")) || [];
-    const title = value.title.toLowerCase();
+    const title = value.title && value.title.toLowerCase();
 
     const existing_value_index =
         cur_search_list.findIndex((data) => data.title === title) + 1 ||
@@ -105,10 +137,10 @@ function update_history() {
         function action() {
             FIRST_SEARCH = false;
             search_wrapper(data);
-            CURRENT_FILM_NAME.innerText = data.title;
+            CURRENT_FILM_NAME.innerText = data.title || `${data.kinopoisk} (ID)`;
         }
         const button = document.createElement("a");
-        button.textContent = data.title;
+        button.textContent = data.title || `${data.kinopoisk} (ID)`;
         button.href = "#";
         button.className = "history-btn";
         if (i === 0 && FIRST_SEARCH) action();
