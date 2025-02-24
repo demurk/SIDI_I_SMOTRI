@@ -1,19 +1,16 @@
-var current_search_type = 2;
+var current_search_type = "kinopoisk";
 const search_type_map = {
     title: {
-        fetch: search_by_name,
         changeToText: "Переключиться на поиск по ID",
         placeholder: "Поиск по названию...",
     },
     kinopoisk: {
-        fetch: search_by_id,
         changeToText: "Переключиться на поиск по Названию",
         placeholder: "Поиск по ID...",
     },
 };
 
 const PLAYER_XPATH = "#player";
-const PLAYER = document.getElementById("player");
 const CURRENT_FILM_NAME = document.getElementById("film_name");
 const SEARCH_BAR = document.getElementById("search");
 const TYPE_BTN = document.getElementById("type_btn");
@@ -27,13 +24,22 @@ var FIRST_SEARCH = true;
 
 function set_loading(is_loading, loader_id) {
     const loader = document.getElementById(loader_id);
-    loader.style.display = is_loading ? "inline-block" : "none";
+    if (loader) {
+        loader.style.display = is_loading ? "inline-block" : "none";
+    }
 }
 
 function toggle_type() {
     current_search_type = current_search_type === "title" ? "kinopoisk" : "title";
     TYPE_BTN.innerText = search_type_map[current_search_type].changeToText;
     SEARCH_BAR.placeholder = search_type_map[current_search_type].placeholder;
+}
+
+function try_fullscreen() {
+    const video = PLAYER.getElementsByClassName("kinobox_iframe")[0];
+    if (video.requestFullscreen) video.requestFullscreen();
+    else if (video.webkitRequestFullscreen) video.webkitRequestFullscreen();
+    else if (video.msRequestFullScreen) video.msRequestFullScreen();
 }
 
 function open_search_list() {
@@ -48,55 +54,78 @@ function hide_history() {
     HISTORY_DROPDOWN.classList.remove("show");
 }
 
-function search_by_id(value) {
-    search({ kinopoisk: value });
-}
+function search_wrapper(value) {
+    const s = value.kinopoisk ? { kinopoisk: value.kinopoisk } : { title: value.title };
 
-function search_by_name(value) {
-    search({ title: value });
-}
-
-function search(value) {
     kbox(PLAYER_XPATH, {
-        search: value,
+        search: s,
         menu: {
             default: "menu_button",
             format: "{N} - {S} : {T} ({Q})",
+        },
+        players: {
+            collaps: {
+                position: 2,
+            },
+            alloha: {
+                position: 1,
+            },
+            ashdi: {
+                position: 3,
+            },
+            cdnmovies: {
+                position: 4,
+            },
+            hdvb: {
+                position: 5,
+            },
+            kodik: {
+                position: 6,
+            },
+            turbo: {
+                position: 7,
+            },
+            vibix: {
+                position: 8,
+            },
+            videocdn: {
+                position: 9,
+            },
+            voidboost: {
+                position: 10,
+            },
         },
     });
     update_search_list(value);
 }
 
-function fetch_video_players(specific_search_type = null, specific_input = null) {
+function search_video_from_form() {
     set_loading(true, LOADER_PLAYER_ID);
-    PLAYER.innerHTML = "";
-    const input = specific_input || SEARCH_BAR.value;
-    CURRENT_FILM_NAME.innerText = input;
+    CURRENT_FILM_NAME.innerText = SEARCH_BAR.value;
 
-    const search_func = search_type_map[specific_search_type || current_search_type].fetch;
-
-    search_func(input);
+    search_wrapper({ [current_search_type]: SEARCH_BAR.value });
 }
 
 function update_search_list(value) {
-    const [type, titleRaw] = Object.entries(value)[0];
     const cur_search_list = JSON.parse(localStorage.getItem("search-list")) || [];
-    const title = titleRaw.toLowerCase();
-    if (title) {
-        const existing_index = cur_search_list.findIndex((data) => data.title === title);
-        if (existing_index === -1) {
-            localStorage.setItem(
-                "search-list",
-                JSON.stringify([{ type, title }, ...cur_search_list.splice(0, 4)])
-            );
-        } else {
-            const element = cur_search_list[existing_index];
-            cur_search_list.splice(existing_index, 1);
-            cur_search_list.splice(0, 0, element);
-            localStorage.setItem("search-list", JSON.stringify(cur_search_list));
-        }
-        update_history();
+    const title = value.title && value.title.toLowerCase();
+
+    const existing_value_index =
+        cur_search_list.findIndex((data) => data.title === title) + 1 ||
+        cur_search_list.findIndex((data) => data.kinopoisk === value.kinopoisk) + 1 - 1;
+
+    if (existing_value_index === -1) {
+        localStorage.setItem(
+            "search-list",
+            JSON.stringify([value, ...cur_search_list.splice(0, 4)])
+        );
+    } else {
+        cur_search_list.splice(existing_value_index, 1);
+        cur_search_list.splice(0, 0, value);
+        localStorage.setItem("search-list", JSON.stringify(cur_search_list));
     }
+
+    update_history();
 }
 
 function update_history() {
@@ -107,12 +136,11 @@ function update_history() {
     const history_buttons = search_list.map((data, i) => {
         function action() {
             FIRST_SEARCH = false;
-            search_type = search_type_map[data.type];
-            search_type.fetch(data.title);
-            CURRENT_FILM_NAME.innerText = data.title;
+            search_wrapper(data);
+            CURRENT_FILM_NAME.innerText = data.title || `${data.kinopoisk} (ID)`;
         }
         const button = document.createElement("a");
-        button.textContent = data.title;
+        button.textContent = data.title || `${data.kinopoisk} (ID)`;
         button.href = "#";
         button.className = "history-btn";
         if (i === 0 && FIRST_SEARCH) action();
@@ -123,13 +151,17 @@ function update_history() {
 }
 
 function fetch_popular(type) {
+    const type_to_arg = {
+        animation: "genre=animation",
+        film: "films=true",
+        series: "series=true",
+    };
+
     set_loading(true, LOADER_POPULAR_ID);
-    fetch(`https://kinobox.tv/api/films/popular?type=${type}`, {
+    fetch(`https://kp.kinobox.tv/films/popular?released=true&page=1&${type_to_arg[type]}`, {
         headers: {
             accept: "*/*",
             "accept-language": "ru,en;q=0.9",
-            "cache-control": "no-cache",
-            pragma: "no-cache",
             priority: "u=1, i",
             "sec-ch-ua":
                 '"Chromium";v="130", "YaBrowser";v="24.12", "Not?A_Brand";v="99", "Yowser";v="2.5"',
@@ -148,10 +180,14 @@ function fetch_popular(type) {
     })
         .then((response) => response.json())
         .then((response) => {
-            const buttons = response.map((value) => {
+            const buttons = response.data.films.map((value) => {
                 function action() {
-                    search_by_id(value.id);
-                    CURRENT_FILM_NAME.innerText = value.title;
+                    CURRENT_FILM_NAME.innerText = value.title.russian || value.title.original;
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                    search_wrapper({
+                        kinopoisk: value.id,
+                        title: value.title.russian || value.title.original,
+                    });
                 }
 
                 const button = document.createElement("button");
@@ -165,9 +201,33 @@ function fetch_popular(type) {
 
                 const title = document.createElement("div");
                 title.className = "popular-title";
-                title.textContent = value.title;
-
+                title.textContent = value.title.russian || value.title.original;
                 button.appendChild(title);
+
+                const rating = document.createElement("div");
+                rating.className = "popular-rating";
+                const ratingValue = value.rating.kinopoisk.value || value.rating.imdb.value;
+                if (ratingValue) {
+                    rating.textContent = ratingValue.toFixed(1);
+                } else {
+                    rating.textContent = "-";
+                }
+                button.appendChild(rating);
+
+                const country = document.createElement("div");
+                country.className = "popular-country";
+                country.textContent =
+                    value.countries
+                        .map((v) => v.name)
+                        .slice(0, 1)
+                        .join(", ") + ` (${value.year})`;
+                button.appendChild(country);
+
+                const genre = document.createElement("div");
+                genre.className = "popular-genre";
+                genre.textContent = value.genres.map((v) => v.name).join(", ");
+                button.appendChild(genre);
+
                 return button;
             });
             set_loading(false, LOADER_POPULAR_ID);

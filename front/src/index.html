@@ -8,7 +8,7 @@
 <body>
     <div id="container">
         <div class="s-box">
-            <form id="form" onsubmit="fetch_video_players()">
+            <form id="form" onsubmit="search_video_from_form()">
                 <input id="search" type="text" list="search-list" oninput="suggest_film_name()"
                     onclick="open_search_list()" class="dropbtn" />
             </form>
@@ -26,9 +26,12 @@
             <div id="player" allowfullscreen sandbox="allow-same-origin allow-scripts" allow="encrypted-media"></div>
             <div id="loader-player" class="loader"></div>
         </div>
+
+        <!-- <button onclick="try_fullscreen()">fullscreen</button> -->
         <div id="popular_buttons">
             <button id="popular_btn_f" onclick="fetch_popular('film')">Фильмы</button>
             <button id="popular_btn_s" onclick="fetch_popular('series')">Сериалы</button>
+            <button id="popular_btn_s" onclick="fetch_popular('animation')">Мультики</button>
         </div>
         <div id="popular_container">
             <div id="loader-popular" class="loader"></div>
